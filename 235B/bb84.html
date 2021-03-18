@@ -62,6 +62,8 @@ document.getElementById("pchannel").value=document.getElementById("abasis").valu
 document.getElementById("rbbasis").value =document.getElementById("pchannel").value;
 
 }
+
+
 function r_decode() {
 
 bits=document.getElementById("recieved").value.split("");
@@ -69,18 +71,18 @@ basis= document.getElementById("bbasis").value.split("");
 var enc="";
 for(var i=0;i<bits.length;i++){ 
 if (bits[i]=='D'){ 
-	if (basis[i]=='+'){enc+="V";}
+	if (basis[i]=='+'){enc+="-";}
 	else{enc+="D";}}
 else if (bits[i]=='V'){ 
-	if (basis[i]=='+'){enc+="V";}
-	else{enc+="D";}}
+	if (basis[i]=='+'){enc+="1";}
+	else{enc+="-";}}
 else if (bits[i]=='H'){ 
-	if (basis[i]=='+'){enc+="H";}
-	else{enc+="A";}}
+	if (basis[i]=='+'){enc+="0";}
+	else{enc+="-";}}
 
 else{
-if (basis[i]=='+'){enc+="V";}
-	else{enc+="A";}}
+if (basis[i]=='+'){enc+="-";}
+	else{enc+="1";}}
 }
 
   document.getElementById("bdecode").value =enc;
@@ -200,6 +202,8 @@ Add validations for 8 bits of data.
 <td> Key generated:<br> <input type="text" id="akey"> </td>     
 <td> Key generated:<br> <input type="text" id="bkey"> </td>    
 </tr>
+
+
 </table>
 </body>
 </html>
