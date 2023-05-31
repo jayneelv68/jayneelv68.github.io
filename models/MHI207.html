@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Trained Model Predictor</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.8.0/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter@3.8.0/dist/tfjs-converter.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+</head>
+<body>
+  <h1>Trained Model Predictor</h1>
+  <div>
+    <label for="age">Age:</label>
+    <input type="text" id="age">
+  </div>
+  <div>
+    <label for="sex">Sex:</label>
+    <select id="sex">
+      <option value="male">Male</option>
+      <option value="female">Female</option>
+    </select>
+  </div>
+  <div>
+    <label for="alb">ALB:</label>
+    <input type="text" id="alb">
+  </div>
+  <div>
+    <label for="alp">ALP:</label>
+    <input type="text" id="alp">
+  </div>
+  <div>
+    <label for="alt">ALT:</label>
+    <input type="text" id="alt">
+  </div>
+  <div>
+    <label for="ast">AST:</label>
+    <input type="text" id="ast">
+  </div>
+  <div>
+    <label for="bil">BIL:</label>
+    <input type="text" id="bil">
+  </div>
+  <div>
+    <label for="che">CHE:</label>
+    <input type="text" id="che">
+  </div>
+  <div>
+    <label for="chol">CHOL:</label>
+    <input type="text" id="chol">
+  </div>
+  <div>
+    <label for="crea">CREA:</label>
+    <input type="text" id="crea">
+  </div>
+  <div>
+    <label for="ggt">GGT:</label>
+    <input type="text" id="ggt">
+  </div>
+  <div>
+    <label for="prot">PROT:</label>
+    <input type="text" id="prot">
+  </div>
+  <button onclick="predict()">Predict</button>
+
+  <script>
+    async function loadModelAndPredict() {
+      const modelURL = 'https://raw.githubusercontent.com/jayneelv68/jayneelv68.github.io/master/models/DecisionTreeClassifier.pkl';
+      const metadataURL = 'https://raw.githubusercontent.com/jayneelv68/jayneelv68.github.io/master/models/model.json';
+
+      const model = await tf.loadLayersModel(tf.io.browserFiles([modelURL, metadataURL]));
+
+      const age = parseFloat(document.getElementById('age').value);
+      const sex = document.getElementById('sex').value;
+      const alb = parseFloat(document.getElementById('alb').value);
+      const alp = parseFloat(document.getElementById('alp').value);
+      const alt = parseFloat(document.getElementById('alt').value);
+      const ast = parseFloat(document.getElementById('ast').value);
+      const bil = parseFloat(document.getElementById('bil').value);
+      const che = parseFloat(document.getElementById('che').value);
+      const chol = parseFloat(document.getElementById('chol').value);
+      const crea = parseFloat(document.getElementById('crea').value);
+      const ggt = parseFloat(document.getElementById('ggt').value);
+      const prot = parseFloat(document.getElementById('prot').value);
+
+      const input = tf.tensor2d([[age, sex, alb, alp, alt, ast, bil, che, chol, crea, ggt, prot]]);
+      const prediction = model.predict(input);
+      const output = prediction.dataSync();
+
+      console.log('Prediction:', output);
+    }
+  </script>
+</body>
+</html>
