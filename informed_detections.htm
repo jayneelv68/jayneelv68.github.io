@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>InformedDetections</title>
+	
+	<style>
+	
+	h1 {
+  font-family: cursive;
+  color: black;
+  text-align: center;
+  font-size: 3em;
+  margin-bottom: 0.2em; /* add margin bottom of 0.5em */
+  margin-top: 0em; /* add margin bottom of 0.5em */
+}
+
+		.network {
+  margin: 0px;
+  padding: 0px;
+  
+  vertical-align: top;
+  border: 1px solid black;
+  display: inline-block;
+  width: 49%; /* set width to 40% of parent width */
+  height:700px; /* set height to 50% of parent height */
+  box-sizing: border-box; /* include border and padding in element's total width */
+}
+button {
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 10px auto; /* add margin top and bottom, and auto left and right */
+  display: block; /* change button display to block to take full width of parent element */
+}
+
+div {
+  text-align: center; /* center child elements horizontally */
+}
+div {
+  text-align: center;
+  white-space: nowrap; /* prevent line breaks within the div */
+}
+
+button {
+    display: inline-block;
+    vertical-align: middle;
+    opacity: 0.5;
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+
+  button:enabled {
+    opacity: 1;
+    background-color: #007bff;
+    cursor: pointer;
+  }
+#defender-network {
+  width: 80%;
+  height: 70%;
+}	
+#attacker-network {
+  width: 80%;
+  height: 70%;
+}
+
+.cell {
+			width: 50px;
+			height: 50px;
+			border: 1px solid black;
+			background-color: yellow;
+			float: left;
+			cursor: pointer;
+		}
+		.green { background-color: green; }
+		.lightblue { background-color: lightblue; }
+		.yellow { background-color: yellow; }
+		.orange { background-color: orange; }
+		.red { background-color: red; }
+		
+		
+		table {
+    border-collapse: collapse;
+  }
+
+  th, td {
+    border: 1px solid black;
+    padding: 5px;
+  }
+  #log {
+  white-space: pre-line;
+  margin-top: 0;
+    padding-top: 0;
+}
+
+	</style>
+</head>
+
+
+
+
+
+<body>
+<h1 style="font-family: cursive; color: black; text-align: center; font-size: 3em;"> InformedDetections</h1>
+<h4 style="font-family: cursive; color: black; text-align: center; font-size: 1em;"> An Emulation Platform for Information Sharing among Colluding Attacks for Honeypot Detection.</h4>
+<div class="network">
+		<h3>Defender Network</h3>
+		<div id="defender-network"></div>
+		<div id="myDiv">  <button id="addEdgeBtn">Add Edge</button>  <button id="removeEdgeBtn">Remove Edge</button></div>
+		<div>	
+			<label for="node-name-input">Add Node:</label>
+			<input type="text" id="node-name-input" placeholder="Enter node name...">
+			<button id="add-node-btn">Add</button>
+			
+		</div>
+</div> 	
+
+	</div>
+	<div class="network">
+		<h3>Attackers Network</h3>
+		<div id="attacker-network"></div>
+		<!-- HTML code for the dropdown menu -->
+		Change Topology:<select id="attackType">
+		  <option value="individual">Individual</option>
+		  <option value="peerToPeer">Peer to Peer</option>
+		  <option value="coalitions">Coalitions</option>
+		  <option value="hybrid">Hybrid</option>
+		</select>
+		<br>
+		<label >Benefit of Node Corruption:</label>
+<input type="range" id="node-corruption-benefit" min="0" max="10" step="1" value="2"><output id="slider-value">2</output>
+<br>
+		<label >Number of iterations</label>
+<input type="range" id="number-iterations" min="3" max="50" step="1" value="10"><output id="iter_slider-value">10</output>
+
+			
+	
+</div>
+	
+	
+	<div style="display: flex;">
+	<table>
+  <thead>
+    <tr>
+	<th></th>
+      <th>Cowrie Honeypot (High Interaction)</th>
+      <th>Honeyd Honeypot (Low Interaction)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+	  <td> Cost of entering </td>
+      <td contenteditable="true" id="cowrieCoststuckin">20</td>
+      <td contenteditable="true" id="honeydCoststuckin">15</td>
+    </tr>
+	
+	<tr>
+	  <td> Cost of probing. </td>
+      <td contenteditable="true" id="cowrieCostprobing">5</td>
+      <td contenteditable="true" id="honeydCostprobing">3</td>
+    </tr>
+	
+	
+	
+	
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>Amount of Information</th>
+      <th>Benefit of receiving</th>
+      <th>Cost of sharing</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Mis-information</td>
+      <td id="mis-info-benefit"></td>
+      <td id="mis-info-cost"></td>
+    </tr>
+    <tr>
+      <td>No information</td>
+      <td id="no-info-benefit"></td>
+      <td id="no-info-cost"></td>
+    </tr>
+    <tr>
+      <td>Honeypot detections</td>
+      <td id="honey-detect-benefit"></td>
+      <td id="honey-detect-cost"></td>
+    </tr>
+    <tr>
+      <td>Honeypot detection and location</td>
+      <td id="honey-loc-benefit"></td>
+      <td id="honey-loc-cost"></td>
+    </tr>
+    <tr>
+      <td>Tactics used and Honeypot Detection</td>
+      <td id="tactics-benefit"></td>
+      <td id="tactics-cost"></td>
+    </tr>
+  </tbody>
+</table>
+<table style="border-collapse: collapse;">
+  <tr>
+    <th style="border: 1px solid black; padding: 5px;">Attacker 1</th>
+    <th style="border: 1px solid black; padding: 5px;">Attacker 2</th>
+    <th style="border: 1px solid black; padding: 5px;">Attacker 3</th>
+    <th style="border: 1px solid black; padding: 5px;">Attacker 4</th>
+    <th style="border: 1px solid black; padding: 5px;">Attacker 5</th>
+    <th style="border: 1px solid black; padding: 5px;">Attacker 6</th>
+    <th style="border: 1px solid black; padding: 5px;">Attacker 7</th>
+  </tr>
+  <tr>
+    <td id="attacker1budget" style="border: 1px solid black; padding: 5px;"></td>
+    <td id="attacker2budget" style="border: 1px solid black; padding: 5px;"></td>
+    <td id="attacker3budget" style="border: 1px solid black; padding: 5px;"></td>
+    <td id="attacker4budget" style="border: 1px solid black; padding: 5px;"></td>
+    <td id="attacker5budget" style="border: 1px solid black; padding: 5px;"></td>
+    <td id="attacker6budget" style="border: 1px solid black; padding: 5px;"></td>
+    <td id="attacker7budget" style="border: 1px solid black; padding: 5px;"></td>
+  </tr>
+  <tr>
+    <td id="attacker1position" style="border: 1px solid black; padding: 5px;"></td>
+    <td id="attacker2position" style="border: 1px solid black; padding: 5px;"></td>
+    <td id="attacker3position" style="border: 1px solid black; padding: 5px;"></td>
+    <td id="attacker4position" style="border: 1px solid black; padding: 5px;"></td>
+    <td id="attacker5position" style="border: 1px solid black; padding: 5px;"></td>
+    <td id="attacker6position" style="border: 1px solid black; padding: 5px;"></td>
+    <td id="attacker7position" style="border: 1px solid black; padding: 5px;"></td>
+  </tr>
+  
+</table>
+	</div>
+<style>
+  #log1 {
+    font-size: 24px;
+    font-weight: bold;
+    color: red;
+    //text-shadow: 1px 1px #FFA500, 2px 2px #FF8C00, 3px 3px #FF7F50;
+    //animation: pulse 2s infinite;
+	  margin-bottom: 0;
+  }
+
+  
+  }
+</style>
+
+<p id="log1">Attackers stuck:</p>
+<p id="log">Run Simulation first</p>
+	<div>
+		<button id="run-simulation-btn">Run Simulation</button>
+		<canvas id="chart1" height="70" ></canvas>
+	</div>
+	
+	
+
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js"></script>
+
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+	<script>
+// Create an empty chart with labels for each iteration
+////console.log(Chart.defaults.global);
+const log = document.getElementById('log');
+
+Chart.defaults.plugins.tooltip.enabled = false;
+let num_iterations=10;
+  const NumberIterslider = document.getElementById("number-iterations");
+  //const output = document.getElementById("iter_slider-value");
+  // Update the current slider value (displayed in the output element) when the user moves the slider
+  NumberIterslider.oninput = function() {
+	num_iterations=parseInt(this.value);
+    document.getElementById("iter_slider-value").innerHTML = num_iterations;
+  }	
+
+
+	var runSimulationBtn = document.getElementById('run-simulation-btn');
+	runSimulationBtn.addEventListener('click', function() {
+	log.textContent="";
+// Perception arrays for each attacker
+var attackerPerception = {
+  'attacker1': { 'gateway': 0.5, 'thermostat': 0.5, 'sec_cam1': 0.5, 'motion': 0.5, 'sec_cam2': 0.5, 'honeyd': 0.5, 'cowrie': 0.5 }, 
+  'attacker2': { 'gateway': 0.5, 'thermostat': 0.5, 'sec_cam1': 0.5, 'motion': 0.5, 'sec_cam2': 0.5, 'honeyd': 0.5, 'cowrie': 0.5 }, 
+  'attacker3': { 'gateway': 0.5, 'thermostat': 0.5, 'sec_cam1': 0.5, 'motion': 0.5, 'sec_cam2': 0.5, 'honeyd': 0.5, 'cowrie': 0.5 }, 
+  'attacker4': { 'gateway': 0.5, 'thermostat': 0.5, 'sec_cam1': 0.5, 'motion': 0.5, 'sec_cam2': 0.5, 'honeyd': 0.5, 'cowrie': 0.5 },
+  'attacker5': { 'gateway': 0.5, 'thermostat': 0.5, 'sec_cam1': 0.5, 'motion': 0.5, 'sec_cam2': 0.5, 'honeyd': 0.5, 'cowrie': 0.5 }, 
+  'attacker6': { 'gateway': 0.5, 'thermostat': 0.5, 'sec_cam1': 0.5, 'motion': 0.5, 'sec_cam2': 0.5, 'honeyd': 0.5, 'cowrie': 0.5 }, 
+  'attacker7': { 'gateway': 0.5, 'thermostat': 0.5, 'sec_cam1': 0.5, 'motion': 0.5, 'sec_cam2': 0.5, 'honeyd': 0.5, 'cowrie': 0.5 }
+};
+
+AttackerBudgets = [
+  { id: 'attacker1', budget: 100 },
+  { id: 'attacker2', budget: 100 },
+  { id: 'attacker3', budget: 100 },
+  { id: 'attacker4', budget: 100 },
+  { id: 'attacker5', budget: 100 },
+  { id: 'attacker6', budget: 100 },
+  { id: 'attacker7', budget: 100 }
+];
+for (var ind1 = 0; ind1 < AttackerBudgets.length; ind1++) 
+								{
+									//console.log("changing");
+									document.getElementById('attacker'+(ind1+1) + 'budget').innerHTML = AttackerBudgets[ind1].budget;
+								}
+								
+const ctx = document.getElementById('chart1').getContext('2d');
+// Get the canvas element
+const canvas = document.getElementById('chart1');
+
+// Check if a chart already exists on the canvas
+const chartExists = Chart.getChart(canvas);
+
+// If a chart exists, destroy it before creating a new one
+if (chartExists) {
+  chartExists.destroy();
+}
+
+const chart = new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: Array.from({ length: num_iterations+1 }, (_, i) => `Iteration ${i+1}`),
+    datasets: [{
+      label: 'Attacker 1',
+      data: [100],
+      borderColor: 'blue',
+      fill: false
+    },
+	{
+      label: 'Attacker 2',
+      data: [100],
+      borderColor: 'yellow',
+      fill: false
+    },
+	{
+      label: 'Attacker 3',
+      data: [100],
+      borderColor: 'green',
+      fill: false
+    },
+	{
+      label: 'Attacker 4',
+      data: [100],
+      borderColor: 'orange',
+      fill: false
+    },
+	{
+      label: 'Attacker 5',
+      data: [100],
+      borderColor: 'red',
+      fill: false
+    },
+	{
+      label: 'Attacker 6',
+      data: [100],
+      borderColor: 'pink',
+      fill: false
+    },
+	{
+      label: 'Attacker 7',
+      data: [100],
+      borderColor: 'violet',
+      fill: false
+    },
+	
+	]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: true,
+    scales: {
+      y: {
+        suggestedMax: 120,
+        suggestedMin: 0
+      }
+    },
+    plugins: {title: {
+        display: true,
+        text: 'Budget Analysis',
+      fontSize: 120
+      },
+      filler: {
+        propagate: true
+      }
+    }
+  }
+});
+
+// Update the chart on each iteration
+let budgets = AttackerBudgets.map(attacker => attacker.budget);
+let iteration = 0;
+const intervalId = setInterval(function() {
+  if (iteration >= num_iterations) {
+    clearInterval(intervalId);
+  } else {
+    AttackerBudgets=moveAttackers(iteration,AttackerBudgets);
+	budgets = AttackerBudgets.map(attacker => attacker.budget);
+    console.log(`Iteration ${iteration}`);
+    iteration++;
+	//console.log(budgets);
+    // Calculate mean and standard deviation of the budgets
+    //const mean = budgets.reduce((sum, budget) => sum + budget, 0) / budgets.length;
+    //const stdDev = Math.sqrt(budgets.reduce((sum, budget) => sum + (budget - mean) ** 2, 0) / budgets.length);
+
+    // Add the mean and standard deviation to the chart
+	for (var i = 0; i < 7; i++) {
+	
+    chart.data.datasets[i].data.push(budgets[i]);
+  // Code to be executed for each iteration
+}
+    //chart.data.datasets[1].data.push(mean + stdDev);
+    //chart.data.datasets[1].data.unshift(mean - stdDev);
+    chart.update();
+
+    // Update the budgets for the next iteration
+    budgets = AttackerBudgets.map(attacker => attacker.budget);
+  }
+}, 200);
+
+
+
+});
+		// Define the nodes and edges for the defender network
+		var defenderNodes = new vis.DataSet([
+			{ id: 'gateway', label: 'Gateway Node' },
+			{ id: 'thermostat', label: 'Smart Thermostat' },
+			{ id: 'sec_cam1', label: 'Security Camera1' },
+			{ id: 'motion', label: 'Motion Sensor' },
+			{ id: 'sec_cam2', label: 'Security Camera 2' },
+			{ id: 'honeyd', label: 'HoneyD Honeypot', shape: 'image', image: 'https://www.honeyd.org/images/honeyd-logo.gif' },
+			{ id: 'cowrie', label: 'Cowrie Honeypot', shape: 'image', image: 'https://cdn.iconscout.com/icon/free/png-256/honeypot-honey-pot-sweet-dessert-food-emoj-symbol-30663.png' }
+
+		]);
+		var defenderEdges = [
+			{ from: 'gateway', to: 'thermostat' },
+			{ from: 'gateway', to: 'sec_cam1' },
+			{ from: 'gateway', to: 'motion' },
+			{ from: 'sec_cam2', to: 'motion' },
+			{ from: 'gateway', to: 'sec_cam2' },
+			{ from: 'gateway', to: 'honeyd' },
+			{ from: 'sec_cam1', to: 'cowrie' },
+			{ from: 'sec_cam2', to: 'cowrie' },
+			{ from: 'honeyd', to: 'thermostat' }
+		];
+
+		// Define the nodes and edges for the attacker network
+
+var attackerNodes = new vis.DataSet([
+  { id: 'attacker1', label: 'Attacker 1', x: 0, y: -300, fixed: true },
+  { id: 'attacker2', label: 'Attacker 2', x: 259.8, y: -177.5, fixed: true },
+  { id: 'attacker3', label: 'Attacker 3', x: 300, y: 0, fixed: true },
+  { id: 'attacker4', label: 'Attacker 4', x: 259.8, y: 177.5, fixed: true }, 
+  { id: 'attacker5', label: '	Attacker 5', x: -70, y: 300, fixed: true },
+  { id: 'attacker6', label: 'Attacker 6', x: -259.8, y: 87.5, fixed: true },
+  { id: 'attacker7', label: 'Attacker 7', x: -259.8, y: -177.5, fixed: true }
+]);
+let AttackerBudgets = [
+  { id: 'attacker1', budget: 100 },
+  { id: 'attacker2', budget: 100 },
+  { id: 'attacker3', budget: 100 },
+  { id: 'attacker4', budget: 100 },
+  { id: 'attacker5', budget: 100 },
+  { id: 'attacker6', budget: 100 },
+  { id: 'attacker7', budget: 100 }
+];
+
+
+var colors=['red','green'];
+var attackerEdges = new vis.DataSet([]);
+// Create the network visualizations using vis.js
+var defenderData = {
+			nodes: defenderNodes,
+			edges: defenderEdges
+		};
+		var defenderContainer = document.getElementById('defender-network');
+		var defenderOptions = {};
+		var defenderNetwork = new vis.Network(defenderContainer, defenderData, defenderOptions);
+		var attackerOptions = {};
+
+
+var defenderOptions = {
+layout: {
+        improvedLayout: true,
+        randomSeed: 2,
+        grid: {
+            cellSize: 60,
+            sort: 'degree'
+        },
+		nodeSpacing: 200,
+        edgeLength: 150,
+		
+    },
+  nodes: {
+  label: true,
+  font: {
+      size: 46 // increase font size to 16 pixels
+    },
+    size: 60, // increase node size to 30 pixels
+    color: {
+      background: 'orange'
+    }
+  },
+  edges: {
+    width: 6,
+	smooth:false
+  },
+  interaction: {
+  selectConnectedEdges: true, // enable selecting connected edges
+  
+
+  zoomView: false, /* enable zooming */
+    hover: false,
+    navigationButtons: true,
+    keyboard: true,
+    borderWidth: 1,
+    borderColor: 'black'
+  },
+  physics: {
+    enabled: true, // enable physics simulation
+    stabilization: true, // stabilize nodes after physics simulation\
+	repulsion: {
+      nodeDistance: 1200 // increase this value to increase the distance between nodes
+    },
+    barnesHut: {
+      gravitationalConstant: -2000, // repulsion between nodes
+      centralGravity: 0.01, // attraction to center
+      springLength: 450, // distance between connected nodes
+      springConstant: 0.1 // stiffness of the springs
+    }
+  },
+    manipulation: {
+        enabled: true,
+        addNode: false, // disable adding nodes through dragging
+        addEdge: false, // disable adding edges through dragging
+        deleteNode: true , // disable deleting nodes
+        deleteEdge: false, // enable deleting edges
+        editNode: false, // disable editing nodes
+        editEdge: false, // disable editing edges
+			
+		}
+};
+
+var attackerOptions = {
+   nodes: {
+  label: true,
+  font: {
+      size: 46 // increase font size to 16 pixels
+    },
+    size: 60, // increase node size to 30 pixels
+   label: true
+
+  },
+  edges: {
+    width: 6,
+    smooth: false
+  },
+  interaction: {
+    
+  zoomView: false, /* enable zooming */
+    hover: false,
+    navigationButtons: true,
+    keyboard: true,
+    borderWidth: 1,
+    borderColor: 'black'
+  },
+  
+  physics: {
+    enabled: true, // enable physics simulation
+    stabilization: true, // stabilize nodes after physics simulation
+	
+    barnesHut: {
+      gravitationalConstant: -8000, // repulsion between nodes
+      centralGravity: 0.01, // attraction to center
+      springLength: 550, // distance between connected nodes
+      springConstant: 0.04 // stiffness of the springs
+    }
+  }
+};
+
+
+var defenderContainer = document.getElementById('defender-network');
+var defenderNetwork = new vis.Network(defenderContainer, defenderData, defenderOptions);
+var attackerData = {
+			nodes: attackerNodes,
+			edges: attackerEdges
+		};
+var attackerContainer = document.getElementById('attacker-network');
+var attackerNetwork = new vis.Network(attackerContainer, attackerData, attackerOptions);
+var attackTypeDropdown = document.getElementById('attackType');
+// Add event listeners for the buttons
+// Add event listeners for the buttons
+var runSimulationBtn = document.getElementById('run-simulation-btn');
+//var visualizeBtn = document.getElementById('visualize-btn');
+var addNodeBtn = document.getElementById('add-node-btn');
+
+
+
+addNodeBtn.addEventListener('click', function() {
+    var nodeNameInput = document.getElementById('node-name-input');
+    var nodeName = nodeNameInput.value;
+    if (nodeName && defenderNodes.length < 8) {
+        defenderNodes.add({
+            id: nodeName.toLowerCase().replace(/\s+/g, '-'), // use lowercase name with hyphens instead of spaces
+            label: nodeName
+        });
+        nodeNameInput.value = '';
+        defenderNetwork.redraw(); // redraw the network to show the new node
+		defenderNetwork.fit();
+		for (const attacker in attackerPerception) {
+		attackerPerception[attacker][nodename] = 0.8;
+			}
+
+    } else {
+        alert('You cannot add more than 8 nodes to the defender network.');
+    }
+});
+// Define a variable to store the selected nodes
+var selectedNodes = [];
+
+// Add a click event listener to the defender network to select nodes
+defenderNetwork.on('click', function(properties) {
+    // Check if a node was clicked
+    if (properties.nodes.length > 0) {
+        // Get the ID of the clicked node
+        var nodeId = properties.nodes[0];
+        // Toggle the selected state of the node
+        if (selectedNodes.includes(nodeId)) {
+            // Node is already selected, deselect it
+            var index = selectedNodes.indexOf(nodeId);
+            selectedNodes.splice(index, 1);
+            defenderNetwork.setSelection({nodes: selectedNodes});
+        } else {
+            // Node is not selected, select it
+            selectedNodes.push(nodeId);
+            defenderNetwork.setSelection({nodes: selectedNodes});
+        }
+    } else {
+        // No node was clicked, deselect all nodes
+        selectedNodes = [];
+        defenderNetwork.setSelection({nodes: selectedNodes});
+    }
+});
+// Add an "Add Edge" button to the page
+addEdgeBtn.addEventListener('click', function() {
+    // Check that exactly two nodes are selected
+    if (selectedNodes.length === 2) {
+        // Get the IDs of the selected nodes
+        var node1Id = selectedNodes[0];
+        var node2Id = selectedNodes[1];
+        // Check if an edge already exists between the selected nodes
+        var edgeExists = defenderEdges.filter(function(edge) {
+            return (edge.from === node1Id && edge.to === node2Id) || (edge.from === node2Id && edge.to === node1Id);
+        }).length > 0;
+        if (edgeExists) {
+            alert('An edge already exists between the selected nodes.');
+        } else {
+            // Add a new edge between the selected nodes
+            defenderEdges.push({from: node1Id, to: node2Id});
+            defenderNetwork.setData({nodes: defenderNodes, edges: defenderEdges});
+			var newEdgeId = defenderEdges.length - 1; // Get the ID of the new edge
+            defenderNetwork.selectEdges([newEdgeId]); // Select the new edge
+            defenderNetwork.draw();
+        }
+    } else {
+        // Display an error message if the wrong number of nodes are selected
+        alert('Please select exactly two nodes to add an edge.');
+    }
+});
+window.addEventListener('resize', function() {
+  // Fit the attacker and defender networks to the screen
+  attackerNetwork.fit();
+  defenderNetwork.fit();
+});
+
+removeEdgeBtn.addEventListener('click', function() {
+    // Check that exactly two nodes are selected
+    if (selectedNodes.length === 2) {
+        // Get the IDs of the selected nodes
+        var node1Id = selectedNodes[0];
+        var node2Id = selectedNodes[1];
+        // Check if an edge exists between the selected nodes
+        var edgeIndex = defenderEdges.findIndex(function(edge) {
+            return (edge.from === node1Id && edge.to === node2Id) || (edge.from === node2Id && edge.to === node1Id);
+        });
+        if (edgeIndex === -	1) {
+            alert('No edge exists between the selected nodes.');
+        } else {
+            // Remove the edge between the selected nodes
+            defenderEdges.splice(edgeIndex, 1);
+            defenderNetwork.setData({nodes: defenderNodes, edges: defenderEdges});
+			defenderNetwork.redraw
+			defenderNetwork.fit();
+        }
+    } else {
+        // Display an error message if the wrong number of nodes are selected
+        alert('Please select exactly two nodes to remove an edge.');
+    }
+});
+
+// Add a right-click event listener to the defender network to remove edges
+defenderNetwork.on('oncontext', function(properties) {
+
+    // Check if an edge was right-clicked
+    if (properties.edges.length > 0) {
+        // Get the ID of the clicked edge
+        var edgeId = properties.edges[0];
+        // Show a confirmation prompt to the user
+        var confirmation = confirm('Are you sure you want to remove this edge?');
+        if (confirmation) {
+            // Remove the edge from the defenderEdges array
+            defenderEdges = defenderEdges.filter(function(edge) {
+                return edge.id !== edgeId;
+            });
+            // Update the defender network data
+            defenderNetwork.setData({nodes: defenderNodes, edges: defenderEdges});
+        }
+    }
+});
+
+
+attackTypeDropdown.addEventListener('change', function() {
+    var selectedAttackType = this.value;
+    // Call the corresponding JavaScript function to define the attacker nodes and edges and draw the network
+    switch (selectedAttackType) {
+      case 'individual':
+        defineIndividualAttacker();
+        break;
+      case 'peerToPeer':
+        definePeerToPeerAttackers();
+        break;
+      case 'coalitions':
+        defineCoalitionAttackers();
+        break;
+      case 'hybrid':
+        defineHybridAttackers();
+        break;
+      default:
+        break;
+    }
+  });
+  
+
+ 
+function defineCoalitionAttackers() {
+var colors=['red','green'];
+
+var attackerEdges = new vis.DataSet([
+  { from: 'attacker1', to: 'attacker2', colorIndex: 1 , color: colors[0]},
+  { from: 'attacker1', to: 'attacker7', colorIndex: 0 , color: colors[0]},
+  { from: 'attacker2', to: 'attacker7', colorIndex: 0 , color: colors[0]},
+  { from: 'attacker3', to: 'attacker4', colorIndex: 0 , color: colors[0]},
+  { from: 'attacker3', to: 'attacker5', colorIndex: 0 , color: colors[0]},
+  { from: 'attacker3', to: 'attacker6', colorIndex: 0 , color: colors[0]},
+  { from: 'attacker4', to: 'attacker5', colorIndex: 0 , color: colors[0]},
+  { from: 'attacker4', to: 'attacker6', colorIndex: 0 , color: colors[0]},
+  { from: 'attacker5', to: 'attacker6', colorIndex: 0 , color: colors[0]}
+]);
+   attackerNetwork.setData({nodes: attackerNodes, edges: attackerEdges});
+   attackerNetwork.redraw(); // redraw the network to show the new node
+   attackerNetwork.fit();
+  }
+  
+
+function definePeerToPeerAttackers() 
+{
+var colors=['red','green'];
+
+var attackerEdges = new vis.DataSet([
+  { from: 'attacker1', to: 'attacker2', colorIndex: 1 , color: colors[0]},
+  { from: 'attacker1', to: 'attacker3', colorIndex: 1 , color: colors[0]},
+  { from: 'attacker1', to: 'attacker4', colorIndex: 0 , color: colors[0]},
+  { from: 'attacker1', to: 'attacker5', colorIndex: 0 , color: colors[0]},
+  { from: 'attacker1', to: 'attacker6', colorIndex: 0 , color: colors[0]},
+  { from: 'attacker1', to: 'attacker7', colorIndex: 0 , color: colors[0]},
+  { from: 'attacker2', to: 'attacker3', colorIndex: 1 , color: colors[0]},
+  { from: 'attacker2', to: 'attacker4', colorIndex: 0 , color: colors[0]},
+  { from: 'attacker2', to: 'attacker5', colorIndex: 0 , color: colors[0]},
+  { from: 'attacker2', to: 'attacker6', colorIndex: 0 , color: colors[0]},
+  { from: 'attacker2', to: 'attacker7', colorIndex: 0 , color: colors[0]},
+  { from: 'attacker3', to: 'attacker4', colorIndex: 0 , color: colors[0]},
+  { from: 'attacker3', to: 'attacker5', colorIndex: 0 , color: colors[0]},
+  { from: 'attacker3', to: 'attacker6', colorIndex: 0 , color: colors[0]},
+  { from: 'attacker3', to: 'attacker7', colorIndex: 0 , color: colors[0]},
+  { from: 'attacker4', to: 'attacker5', colorIndex: 0 , color: colors[0]},
+  { from: 'attacker4', to: 'attacker6', colorIndex: 0 , color: colors[0]},
+  { from: 'attacker4', to: 'attacker7', colorIndex: 0 , color: colors[0]},
+  { from: 'attacker5', to: 'attacker6', colorIndex: 0 , color: colors[0]},
+  { from: 'attacker5', to: 'attacker7', colorIndex: 0 , color: colors[0]},
+  { from: 'attacker6', to: 'attacker7', colorIndex: 0 , color: colors[0]}
+]);
+  attackerNetwork.setData({nodes: attackerNodes, edges: attackerEdges});
+  attackerNetwork.redraw(); // redraw the network to show the new node
+  attackerNetwork.fit();
+  }
+    
+  
+function defineHybridAttackers() {
+var attackerEdges = new vis.DataSet([
+  { from: 'attacker2', to: 'attacker7', colorIndex: 0 , color: colors[0]},
+  { from: 'attacker3', to: 'attacker4', colorIndex: 0 , color: colors[0]},
+  { from: 'attacker3', to: 'attacker5', colorIndex: 0 , color: colors[0]},
+  { from: 'attacker3', to: 'attacker6', colorIndex: 0 , color: colors[0]},
+  { from: 'attacker4', to: 'attacker5', colorIndex: 0 , color: colors[0]},
+  { from: 'attacker4', to: 'attacker6', colorIndex: 0 , color: colors[0]},
+  { from: 'attacker5', to: 'attacker6', colorIndex: 0 , color: colors[0]}
+]);
+attackerNetwork.setData({nodes: attackerNodes, edges: attackerEdges});
+attackerNetwork.redraw(); // redraw the network to show the new node
+attackerNetwork.fit();
+}
+  
+  
+function defineIndividualAttacker() {
+	var attackerEdges = new vis.DataSet([]);
+	attackerNetwork.setData({nodes: attackerNodes, edges: attackerEdges});
+	attackerNetwork.redraw(); // redraw the network to show the new node
+	attackerNetwork.fit();
+}
+  
+  
+
+
+for (i = 0; i < AttackerBudgets.length; i++) {
+  var attackerId = AttackerBudgets[i].id;
+  var attackerBudget = AttackerBudgets[i].budget;
+  document.getElementById(attackerId + 'budget').innerHTML = attackerBudget;
+}
+  
+let high_interaction=0.75;
+let low_interaction=0.25;
+let cowrie_stuckin = 15;
+let honeyd_stuckin = 15;
+let cowrie_probin = 5;
+let honeyd_probin = 3;
+let cowrie_benefit_mul = 1;
+let honeyd_benefit_mul = 1;
+let friction = 0.25;
+  
+  
+//cowrieCoststuckin,cowrieCostprobing,cowrieBenefitprobing
+
+const cowrieCostStuckInElem = document.getElementById("cowrieCoststuckin");
+const honeydCostStuckInElem = document.getElementById("honeydCoststuckin");
+  
+const cowrieCostProbInElem = document.getElementById("cowrieCostprobing");
+const honeydCostProbInElem = document.getElementById("honeydCostprobing");
+ 
+const cowrieBenefitMultipleElem = document.getElementById("cowrieBenefitMultiple");
+const honeydBenefitMultipleElem = document.getElementById("honeydBenefitMultiple");
+  
+cowrieCostStuckInElem.addEventListener("input", () => {
+	cowrie_stuckin = parseInt(cowrieCostStuckInElem.innerText) || 0;
+	cowrie_benefit_mul= (cowrie_stuckin+cowrie_probin) * high_interaction * (1 - friction);
+	cowrieBenefitMultipleElem.innerText =cowrie_benefit_mul;
+	 
+});
+honeydCostStuckInElem.addEventListener("input", () => {
+    honeyd_stuckin = parseInt(honeydCostStuckInElem.innerText) || 0;
+	honeyd_benefit_mul= (honeyd_stuckin+honeyd_probin) * low_interaction * (1 - friction);
+	honeydBenefitMultipleElem.innerText =honeyd_benefit_mul;
+});
+  
+cowrieCostProbInElem.addEventListener("input", () => {
+    cowrie_probin = parseInt(cowrieCostProbInElem.innerText) || 0;
+	cowrie_benefit_mul= (cowrie_stuckin+cowrie_probin) * high_interaction * (1 - friction);
+	cowrieBenefitMultipleElem.innerText =cowrie_benefit_mul;
+});
+honeydCostProbInElem.addEventListener("input", () => {
+	honeyd_probin = parseInt(honeydCostProbInElem.innerText) || 0;
+	honeyd_benefit_mul= (honeyd_stuckin+honeyd_probin) * low_interaction * (1 - friction);
+	honeydBenefitMultipleElem.innerText =honeyd_benefit_mul;
+});
+  
+  
+  
+  
+let benefit_corruption=0.5;
+const NodeCorruptioneBenefitslider = document.getElementById("node-corruption-benefit");
+NodeCorruptioneBenefitslider.oninput = function() {
+	benefit_corruption=parseInt(this.value);
+    document.getElementById("slider-value").innerHTML = benefit_corruption;
+}	
+  
+	
+  
+  
+const benefitOfReceiving = [
+  -3,
+  0,
+  1,
+  2,
+  3
+];
+
+// Cost of sharing array
+const costOfSharing = [
+  2,
+  0,
+  3,
+  5,
+  10,
+];
+
+// Fill in benefit of receiving values
+document.getElementById("mis-info-benefit").textContent = benefitOfReceiving[0];
+document.getElementById("no-info-benefit").textContent = benefitOfReceiving[1];
+document.getElementById("honey-detect-benefit").textContent = benefitOfReceiving[2];
+document.getElementById("honey-loc-benefit").textContent = benefitOfReceiving[3];
+document.getElementById("tactics-benefit").textContent = benefitOfReceiving[4];
+// Fill in cost of sharing values
+document.getElementById("mis-info-cost").textContent = costOfSharing[0];
+document.getElementById("no-info-cost").textContent = costOfSharing[1];
+document.getElementById("honey-detect-cost").textContent = costOfSharing[2];
+document.getElementById("honey-loc-cost").textContent = costOfSharing[3];
+document.getElementById("tactics-cost").textContent = costOfSharing[4];
+
+
+var defenderEdges = [
+			{ from: 'gateway', to: 'thermostat' },
+			{ from: 'gateway', to: 'sec_cam1' },
+			{ from: 'gateway', to: 'motion' },
+			{ from: 'sec_cam2', to: 'motion' },
+			{ from: 'gateway', to: 'sec_cam2' },
+			{ from: 'gateway', to: 'honeyd' },
+			{ from: 'sec_cam1', to: 'cowrie' },
+			{ from: 'sec_cam2', to: 'cowrie' },
+			{ from: 'honeyd', to: 'thermostat' }
+		];
+	
+var defenderNodes = new vis.DataSet([
+			{ id: 'gateway', label: 'Gateway Node' },
+			{ id: 'thermostat', label: 'Smart Thermostat' },
+			{ id: 'sec_cam1', label: 'Security Camera1' },
+			{ id: 'motion', label: 'Motion Sensor' },
+			{ id: 'sec_cam2', label: 'Security Camera 2' },
+			{ id: 'honeyd', label: 'HoneyD Honeypot', shape: 'image', image: 'https://www.honeyd.org/images/honeyd-logo.gif' },
+			{ id: 'cowrie', label: 'Cowrie Honeypot', shape: 'image', image: 'https://cdn.iconscout.com/icon/free/png-256/honeypot-honey-pot-sweet-dessert-food-emoj-symbol-30663.png' }
+
+		]);	
+// Perception arrays for each attacker
+var attackerPerception = {
+  'attacker1': { 'gateway': 0.5, 'thermostat': 0.5, 'sec_cam1': 0.5, 'motion': 0.5, 'sec_cam2': 0.5, 'honeyd': 0.5, 'cowrie': 0.5 }, 
+  'attacker2': { 'gateway': 0.5, 'thermostat': 0.5, 'sec_cam1': 0.5, 'motion': 0.5, 'sec_cam2': 0.5, 'honeyd': 0.5, 'cowrie': 0.5 }, 
+  'attacker3': { 'gateway': 0.5, 'thermostat': 0.5, 'sec_cam1': 0.5, 'motion': 0.5, 'sec_cam2': 0.5, 'honeyd': 0.5, 'cowrie': 0.5 }, 
+  'attacker4': { 'gateway': 0.5, 'thermostat': 0.5, 'sec_cam1': 0.5, 'motion': 0.5, 'sec_cam2': 0.5, 'honeyd': 0.5, 'cowrie': 0.5 },
+  'attacker5': { 'gateway': 0.5, 'thermostat': 0.5, 'sec_cam1': 0.5, 'motion': 0.5, 'sec_cam2': 0.5, 'honeyd': 0.5, 'cowrie': 0.5 }, 
+  'attacker6': { 'gateway': 0.5, 'thermostat': 0.5, 'sec_cam1': 0.5, 'motion': 0.5, 'sec_cam2': 0.5, 'honeyd': 0.5, 'cowrie': 0.5 }, 
+  'attacker7': { 'gateway': 0.5, 'thermostat': 0.5, 'sec_cam1': 0.5, 'motion': 0.5, 'sec_cam2': 0.5, 'honeyd': 0.5, 'cowrie': 0.5 }
+};
+
+
+var currentPosition = (['gateway','sec_cam2','sec_cam1','thermostat','motion','sec_cam2','gateway']);
+  
+{
+for ( i = 0; i < AttackerBudgets.length; i++) 
+	  document.getElementById('attacker'+(i+1) + 'position').innerHTML = currentPosition[i];
+}
+
+
+	
+function moveAttackers(iteration,AttackerBudgets) 
+{
+    ////console.log(attackerPerception);
+	attackerNodes.forEach(function(attackerNode, index) 
+	{
+		var attacker_number = parseInt(index.charAt(index.length - 1), 10);
+		var neighboringNodes = [currentPosition[attacker_number-1]];
+		defenderEdges.forEach(function(edge) 
+		{
+		  if (edge.from === currentPosition[attacker_number-1]) 
+		  {
+			neighboringNodes.push(edge.to);
+		  } 
+		  else if (edge.to === currentPosition[attacker_number-1]) 
+		  {
+			neighboringNodes.push(edge.from);
+		  }
+		}
+		);
+		var honeypotPerception = [];
+		neighboringNodes.forEach(function(nodeId) 
+		{
+			honeypotPerception[nodeId]=1.0-attackerPerception['attacker' + attacker_number][nodeId];
+		}
+		);
+		console.log(iteration,'attacker' + attacker_number,honeypotPerception,attackerPerception['attacker' + attacker_number]);
+		var nextNode=0;
+		var totalWeight = Object.values(honeypotPerception).reduce((sum, value) => sum + value, 0);
+		//Math.seedrandom(49132);
+		var random = Math.random() * totalWeight;
+		for (var item in honeypotPerception) 
+		{
+			random -= honeypotPerception[item];
+			if (random <= 0) 
+			{
+				nextNode= item;
+				for (let probi = 0; probi < AttackerBudgets.length; probi++) 
+						{
+							if (AttackerBudgets[probi].id === "attacker"+attacker_number)
+							{
+								var prob=Math.random()< attackerPerception["attacker"+attacker_number][nextNode]*(AttackerBudgets[probi].budget/100);//whether probe or not.
+								if (prob){AttackerBudgets[probi].budget=Math.max(0,AttackerBudgets[probi].budget-cowrie_probin);}
+								break;
+							}
+						}
+						
+							
+				if (nextNode===currentPosition[attacker_number-1]){;}
+				else if (nextNode==='cowrie')
+				{
+					for ( var ind = 0; ind < AttackerBudgets.length; ind++) 
+					{
+						if (AttackerBudgets[ind].id === "attacker"+attacker_number) 
+						{
+							
+							log.textContent += `\nAttacker ${ind + 1} got involved with ${nextNode} during iteration ${iteration+1}`;
+							AttackerBudgets[ind].budget = Math.max(0,AttackerBudgets.find(attacker => attacker.id === ("attacker"+attacker_number)).budget-cowrie_stuckin);			
+							//Math.seedrandom(11342);
+							if (prob)
+							{	
+							log.textContent += " and probed.";
+							
+								attackerPerception["attacker"+attacker_number][nextNode]=1.0;
+								// get neighbors of that attacker.
+								
+								var neighboringattNodes = [];
+								attackerEdges.forEach(function(edge) 
+								{
+								  if (edge.from === AttackerBudgets[ind].id) 
+								  {
+									neighboringattNodes.push(edge.to);
+								  } 
+								  else if (edge.to === AttackerBudgets[ind].id) 
+								  {
+									neighboringattNodes.push(edge.from);
+								  }
+								}
+								)
+								;
+								// for each neighbor, prob share=
+								neighboringattNodes.forEach(function(nodeId)
+								{
+									for (let i = 0; i < AttackerBudgets.length; i++) 
+									{
+										if (AttackerBudgets[i].id === nodeId) 
+										{
+											var sharinglevel=3;
+											AttackerBudgets[i].budget=AttackerBudgets[i].budget+benefitOfReceiving[sharinglevel];
+											AttackerBudgets[ind].budget=AttackerBudgets[ind].budget-costOfSharing[sharinglevel];
+											if (sharinglevel>=3)
+											{
+												attackerPerception.forEach(attackID) 
+												{
+													if (attackID === AttackerBudgets[ind].id) 
+													{
+														attackerPerception[attackID][nextNode]=min(1.0,attackerPerception[attackID][nextNode]*2);
+													}
+												}
+											}
+										}
+									}
+								}
+								)
+							}
+							else{
+							
+							log.textContent += " but did not probe.";
+							}
+						}
+						
+					}
+					;
+						//  if share, reduce budget of current node by value
+						//			increase budget of neighbor node by value
+						// 			if info is 3 or 4, change other node's perception of index.
+						
+				
+					for (var i = 0; i < AttackerBudgets.length; i++) 
+					{
+						//console.log("changing");
+						document.getElementById('attacker'+(i+1) + 'position').innerHTML = currentPosition[i];
+						document.getElementById('attacker'+(i+1) + 'budget').innerHTML = AttackerBudgets[i].budget;
+					}
+					//break; 
+				}
+		
+			
+				else if (nextNode==='honeyd')
+				{
+					for ( var ind = 0; ind < AttackerBudgets.length; ind++) 
+					{
+						if (AttackerBudgets[ind].id === "attacker"+attacker_number) 
+						{
+							
+							log.textContent += `\nAttacker ${ind + 1} got involved with ${nextNode} during iteration ${iteration+1}`;
+							AttackerBudgets[ind].budget = Math.max(0.0,AttackerBudgets.find(attacker => attacker.id === ("attacker"+attacker_number)).budget-honeyd_stuckin);			
+							//Math.seedrandom(11342);
+							var prob=Math.random()<(attackerPerception["attacker"+attacker_number][nextNode]);//whether probe or not.
+							if (prob)
+							{	
+							
+							log.textContent += " and probed.";
+								attackerPerception["attacker"+attacker_number][nextNode]=1.0;
+								// get neighbors of that attacker.
+								//log.textContent += `\nAttacker ${ind + 1} got involved with ${nextNode} during iteration ${iteration+1}`;
+								var neighboringattNodes = [];
+								attackerEdges.forEach(function(edge) 
+								{
+								  if (edge.from === AttackerBudgets[ind].id) 
+								  {
+									neighboringattNodes.push(edge.to);
+								  } 
+								  else if (edge.to === AttackerBudgets[ind].id) 
+								  {
+									neighboringattNodes.push(edge.from);
+								  }
+								}
+								)
+								;
+								// for each neighbor, prob share=
+								neighboringattNodes.forEach(function(nodeId)
+								{
+									for (let i = 0; i < AttackerBudgets.length; i++) 
+									{
+										if (AttackerBudgets[i].id === nodeId) 
+										{
+											var sharinglevel=3;
+											AttackerBudgets[i].budget=AttackerBudgets[i].budget+benefitOfReceiving[sharinglevel];
+											AttackerBudgets[ind].budget=AttackerBudgets[ind].budget-costOfSharing[sharinglevel];
+											if (sharinglevel>=3)
+											{
+												attackerPerception.forEach(attackID) 
+												{
+													if (attackID === AttackerBudgets[ind].id) 
+													{
+														attackerPerception[attackID][nextNode]=min(1.0,attackerPerception[attackID][nextNode]*2);
+													}
+												}
+											}
+										}
+									}
+								}
+								)
+							}
+							
+							else{
+							
+							log.textContent += " but did not probe.";
+							}
+						}
+						
+					}
+					;
+						//  if share, reduce budget of current node by value
+						//			increase budget of neighbor node by value
+						// 			if info is 3 or 4, change other node's perception of index.
+						
+				
+					for (var i = 0; i < AttackerBudgets.length; i++) 
+					{
+						//console.log("changing");
+						document.getElementById('attacker'+(i+1) + 'position').innerHTML = currentPosition[i];
+						document.getElementById('attacker'+(i+1) + 'budget').innerHTML = AttackerBudgets[i].budget;
+					}
+					//break; 
+				}
+				else 
+				{
+					//Math.seedrandom(100);
+					
+					
+					
+						for (let i = 0; i < AttackerBudgets.length; i++) 
+						{
+							if (AttackerBudgets[i].id === "attacker"+attacker_number)
+							{
+							
+								AttackerBudgets[i].budget = Math.max(0.0,AttackerBudgets.find(attacker => attacker.id === ("attacker"+attacker_number)).budget+benefit_corruption);			
+								attackerPerception["attacker"+attacker_number][nextNode]=Math.min(1.0,attackerPerception["attacker"+attacker_number][nextNode]*0.5)//0.5*attackerPerception["attacker"+attacker_number][nextNode];
+								//log.textContent += `\nAttacker ${attacker_number } probed ${nextNode} during iteration ${iteration+1}`;
+							
+								for (var ind1 = 0; ind1 < AttackerBudgets.length; ind1++) 
+								{
+									//console.log("changing");
+									document.getElementById('attacker'+(ind1+1) + 'position').innerHTML = currentPosition[ind1];
+									document.getElementById('attacker'+(ind1+1) + 'budget').innerHTML = AttackerBudgets[ind1].budget;
+								}
+								break;		
+							}
+						}
+						if (prob)
+					{
+						var neighboringattNodes = [];
+								attackerEdges.forEach(function(edge) 
+								{
+								  if (edge.from === AttackerBudgets[ind].id) 
+								  {
+									neighboringattNodes.push(edge.to);
+								  } 
+								  else if (edge.to === AttackerBudgets[ind].id) 
+								  {
+									neighboringattNodes.push(edge.from);
+								  }
+								}
+								)
+								;
+								// for each neighbor, prob share=
+								neighboringattNodes.forEach(function(nodeId)
+								{
+									for (let i = 0; i < AttackerBudgets.length; i++) 
+									{
+										if (AttackerBudgets[i].id === nodeId) 
+										{
+											var sharinglevel=3;
+											AttackerBudgets[i].budget=float(AttackerBudgets[i].budget)+float(benefitOfReceiving[sharinglevel]);
+											AttackerBudgets[ind].budget=float(AttackerBudgets[ind].budget)-float(costOfSharing[sharinglevel]);
+											if (sharinglevel>=3)
+											{
+												attackerPerception.forEach(attackID) 
+												{
+													if (attackID === AttackerBudgets[i].id) 
+													{
+														attackerPerception[attackID][nextNode]=max(0.0,attackerPerception[attackID][nextNode]/2);
+													}
+												}
+											}
+										}
+									}
+								}
+								)
+								
+								////console.log(AttackerBudgets);
+						break;
+					  
+					}
+					else
+					{
+					//console.log("idk2");
+					}
+				
+
+				}
+			
+				currentPosition[attacker_number-1]=nextNode;
+				break;
+			}
+			else
+			{
+				//console.log("idk whats happening here");
+			}
+	
+		}
+	}
+	);
+	return AttackerBudgets;
+  }
+  
+
+
+
+
+</script>
+	
+	
+
+</body>
+</html>
+
